@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start": "serve -s dist/cloud_movie_proyect",
+    "build": "ng build --configuration production",
     "test": "ng test",
-    "serve:ssr:cloud_movie_proyect": "node dist/cloud_movie_proyect/server/server.mjs"
+    "lint": "ng lint",
+    "e2e": "ng e2e"
   },
   "prettier": {
     "printWidth": 100,
