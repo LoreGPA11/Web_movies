@@ -1,12 +1,13 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { MoviesComponent } from './movies/movies.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  standalone: true,
+  imports: [MoviesComponent],
+  template: '<app-movies></app-movies>',
+  styles: []
 })
 export class App {
-  protected readonly title = signal('cloud_movie_proyect');
+  title = 'cloud-movie-proyect';
 }
