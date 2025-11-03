@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "serve -s dist/cloud_movie_proyect",
+    "start": "serve -s dist/cloud_movie_proyect/browser -l ${PORT:-4200}",
     "build": "ng build --configuration production",
     "test": "ng test",
     "lint": "ng lint",
