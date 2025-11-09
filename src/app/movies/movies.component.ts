@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Movie } from '../models/movie.model';
@@ -16,7 +17,7 @@ export class MoviesComponent implements OnInit {
   selectedMovie: Movie | null = null;
   isEditing: boolean = false;
   isAdding: boolean = false;
-
+  
   movieForm: Partial<Movie> = {
     title: '',
     director: '',
@@ -28,14 +29,18 @@ export class MoviesComponent implements OnInit {
     description: ''
   };
 
-  constructor(private movieService: MovieService) {}
+  constructor(
+    private movieService: MovieService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {}
 
-  // 🔹 Ahora ngOnInit es asíncrono
   async ngOnInit(): Promise<void> {
-    await this.loadMovies();
+    // Solo cargar películas en el navegador
+    if (isPlatformBrowser(this.platformId)) {
+      await this.loadMovies();
+    }
   }
 
-  // 🔹 Carga las películas de manera asíncrona
   async loadMovies(): Promise<void> {
     this.movies = await this.movieService.getAllMovies();
   }
@@ -64,12 +69,11 @@ export class MoviesComponent implements OnInit {
       genre: '',
       duration: 0,
       rating: 0,
-      poster: 'https://via.placeholder.com/200x300/4a5568/ffffff?text=Nueva+Pelicula',
+      poster: 'https://image.tmdb.org/t/p/w500/default.jpg',
       description: ''
     };
   }
 
-  // 🔹 Guardar película con await
   async saveMovie(): Promise<void> {
     if (this.isEditing && this.selectedMovie) {
       await this.movieService.updateMovie(this.selectedMovie.id, this.movieForm);
@@ -83,7 +87,6 @@ export class MoviesComponent implements OnInit {
     this.resetForm();
   }
 
-  // 🔹 Borrar película con await
   async deleteMovie(id: number): Promise<void> {
     if (confirm('¿Estás seguro de que deseas eliminar esta película?')) {
       const success = await this.movieService.deleteMovie(id);

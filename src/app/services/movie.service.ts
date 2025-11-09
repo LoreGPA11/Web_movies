@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Movie } from '../models/movie.model';
 
 @Injectable({
@@ -6,8 +7,18 @@ import { Movie } from '../models/movie.model';
 })
 export class MovieService {
   private apiUrl = '/api/movies';
+  private isBrowser: boolean;
+
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   async getAllMovies(): Promise<Movie[]> {
+    // Si no estamos en el navegador, retornar array vacío
+    if (!this.isBrowser) {
+      return [];
+    }
+
     try {
       const response = await fetch(this.apiUrl);
       if (!response.ok) throw new Error('Error al cargar películas');
@@ -19,6 +30,8 @@ export class MovieService {
   }
 
   async getMovieById(id: number): Promise<Movie | undefined> {
+    if (!this.isBrowser) return undefined;
+
     try {
       const response = await fetch(`${this.apiUrl}/${id}`);
       if (!response.ok) return undefined;
@@ -30,6 +43,8 @@ export class MovieService {
   }
 
   async addMovie(movie: Omit<Movie, 'id'>): Promise<Movie | null> {
+    if (!this.isBrowser) return null;
+
     try {
       const response = await fetch(this.apiUrl, {
         method: 'POST',
@@ -45,6 +60,8 @@ export class MovieService {
   }
 
   async updateMovie(id: number, movie: Partial<Movie>): Promise<Movie | undefined> {
+    if (!this.isBrowser) return undefined;
+
     try {
       const response = await fetch(`${this.apiUrl}/${id}`, {
         method: 'PUT',
@@ -60,6 +77,8 @@ export class MovieService {
   }
 
   async deleteMovie(id: number): Promise<boolean> {
+    if (!this.isBrowser) return false;
+
     try {
       const response = await fetch(`${this.apiUrl}/${id}`, {
         method: 'DELETE'
