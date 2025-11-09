@@ -16,7 +16,7 @@ export class MoviesComponent implements OnInit {
   selectedMovie: Movie | null = null;
   isEditing: boolean = false;
   isAdding: boolean = false;
-  
+
   movieForm: Partial<Movie> = {
     title: '',
     director: '',
@@ -30,12 +30,14 @@ export class MoviesComponent implements OnInit {
 
   constructor(private movieService: MovieService) {}
 
-  ngOnInit(): void {
-    this.loadMovies();
+  // 🔹 Ahora ngOnInit es asíncrono
+  async ngOnInit(): Promise<void> {
+    await this.loadMovies();
   }
 
-  loadMovies(): void {
-    this.movies = this.movieService.getAllMovies();
+  // 🔹 Carga las películas de manera asíncrona
+  async loadMovies(): Promise<void> {
+    this.movies = await this.movieService.getAllMovies();
   }
 
   selectMovie(movie: Movie): void {
@@ -67,24 +69,28 @@ export class MoviesComponent implements OnInit {
     };
   }
 
-  saveMovie(): void {
+  // 🔹 Guardar película con await
+  async saveMovie(): Promise<void> {
     if (this.isEditing && this.selectedMovie) {
-      this.movieService.updateMovie(this.selectedMovie.id, this.movieForm);
+      await this.movieService.updateMovie(this.selectedMovie.id, this.movieForm);
       this.isEditing = false;
       this.selectedMovie = null;
     } else if (this.isAdding) {
-      this.movieService.addMovie(this.movieForm as Omit<Movie, 'id'>);
+      await this.movieService.addMovie(this.movieForm as Omit<Movie, 'id'>);
       this.isAdding = false;
     }
-    this.loadMovies();
+    await this.loadMovies();
     this.resetForm();
   }
 
-  deleteMovie(id: number): void {
+  // 🔹 Borrar película con await
+  async deleteMovie(id: number): Promise<void> {
     if (confirm('¿Estás seguro de que deseas eliminar esta película?')) {
-      this.movieService.deleteMovie(id);
-      this.loadMovies();
-      this.selectedMovie = null;
+      const success = await this.movieService.deleteMovie(id);
+      if (success) {
+        await this.loadMovies();
+        this.selectedMovie = null;
+      }
     }
   }
 
